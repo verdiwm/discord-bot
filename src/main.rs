@@ -1,7 +1,13 @@
+use anyhow::Result;
 use poise::serenity_prelude as serenity;
 
+#[derive(Debug, thiserror::Error)]
+enum Error {
+    #[error("{0}")]
+    Serenity(#[from] serenity::Error),
+}
+
 struct Data {} // User data, which is stored and accessible in all command invocations
-type Error = Box<dyn std::error::Error + Send + Sync>;
 type Context<'a> = poise::Context<'a, Data, Error>;
 
 /// Displays your or another user's account creation date
@@ -17,8 +23,8 @@ async fn age(
 }
 
 #[tokio::main]
-async fn main() {
-    dotenvy::dotenv().unwrap();
+async fn main() -> Result<()> {
+    dotenvy::dotenv()?;
 
     let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
     let intents = serenity::GatewayIntents::non_privileged();
@@ -36,8 +42,11 @@ async fn main() {
         })
         .build();
 
-    let client = serenity::ClientBuilder::new(token, intents)
+    let mut client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
-        .await;
-    client.unwrap().start().await.unwrap();
+        .await?;
+
+    client.start().await?;
+
+    Ok(())
 }
