@@ -24,6 +24,8 @@ async fn age(
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    tracing_subscriber::fmt::init();
+
     dotenvy::dotenv()?;
 
     let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
