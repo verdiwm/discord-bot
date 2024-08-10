@@ -5,3 +5,5 @@ edition = "2021"
 publish = false
 
 [dependencies]
+poise = "0.6.1"
+tokio = { version = "1.39.2", features = ["rt-multi-thread", "macros"] }
